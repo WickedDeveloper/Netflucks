@@ -12,7 +12,14 @@ namespace Netflucks.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            if (User.Identity.IsAuthenticated)
+            {
+                return View(); // RedirectToAction("Index", "Movies");
+            }
+            else
+            {
+                return View();
+            }
         }
 
         public IActionResult About()
