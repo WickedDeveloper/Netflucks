@@ -19,8 +19,8 @@ namespace Netflucks.Controllers
             else
             {
                 return View();
+            }
         }
-    }
 
         public IActionResult About()
         {

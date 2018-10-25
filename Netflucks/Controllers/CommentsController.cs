@@ -9,41 +9,23 @@ using Netflucks.Models;
 
 namespace Netflucks.Controllers
 {
-    public class MoviesController : Controller
+    public class CommentsController : Controller
     {
         private readonly netflucksContext _context;
 
-        public MoviesController(netflucksContext context)
+        public CommentsController(netflucksContext context)
         {
             _context = context;
         }
 
-        // Create Comment
-        public IActionResult CreateComment()
-        {
-            return RedirectToAction("Create", "Comments");
-        }
-
         // GET: Comments
-        //public async Task<IActionResult> GetComments()
-        //{
-        //    CommentsController comments = new CommentsController(_context);
-        //    ViewBag.Comments = comments.Index();
-        //}
-        // GET: Movies
         public async Task<IActionResult> Index()
         {
-            if (User.Identity.IsAuthenticated)
-            {
-                return View(await _context.Movie.ToListAsync());
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            var netflucksContext = _context.Comment.Include(c => c.Movie);
+            return View(await netflucksContext.ToListAsync());
         }
 
-        // GET: Movies/Details/5
+        // GET: Comments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -51,39 +33,42 @@ namespace Netflucks.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
-                .SingleOrDefaultAsync(m => m.MovieId == id);
-            if (movie == null)
+            var comment = await _context.Comment
+                .Include(c => c.Movie)
+                .SingleOrDefaultAsync(m => m.CommentId == id);
+            if (comment == null)
             {
                 return NotFound();
             }
 
-            return View(movie);
+            return View(comment);
         }
 
-        // GET: Movies/Create
+        // GET: Comments/Create
         public IActionResult Create()
         {
+            ViewData["MovieId"] = new SelectList(_context.Movie, "MovieId", "Title");
             return View();
         }
 
-        // POST: Movies/Create
+        // POST: Comments/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MovieId,Title,ReleaseDate,Genre,Rating")] Movie movie)
+        public async Task<IActionResult> Create([Bind("CommentId,MovieId,MovieComment")] Comment comment)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(movie);
+                _context.Add(comment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(movie);
+            ViewData["MovieId"] = new SelectList(_context.Movie, "MovieId", "Title", comment.MovieId);
+            return View(comment);
         }
 
-        // GET: Movies/Edit/5
+        // GET: Comments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -91,22 +76,23 @@ namespace Netflucks.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie.SingleOrDefaultAsync(m => m.MovieId == id);
-            if (movie == null)
+            var comment = await _context.Comment.SingleOrDefaultAsync(m => m.CommentId == id);
+            if (comment == null)
             {
                 return NotFound();
             }
-            return View(movie);
+            ViewData["MovieId"] = new SelectList(_context.Movie, "MovieId", "Title", comment.MovieId);
+            return View(comment);
         }
 
-        // POST: Movies/Edit/5
+        // POST: Comments/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("MovieId,Title,ReleaseDate,Genre,Rating")] Movie movie)
+        public async Task<IActionResult> Edit(int id, [Bind("CommentId,MovieId,MovieComment")] Comment comment)
         {
-            if (id != movie.MovieId)
+            if (id != comment.CommentId)
             {
                 return NotFound();
             }
@@ -115,12 +101,12 @@ namespace Netflucks.Controllers
             {
                 try
                 {
-                    _context.Update(movie);
+                    _context.Update(comment);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MovieExists(movie.MovieId))
+                    if (!CommentExists(comment.CommentId))
                     {
                         return NotFound();
                     }
@@ -131,10 +117,11 @@ namespace Netflucks.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(movie);
+            ViewData["MovieId"] = new SelectList(_context.Movie, "MovieId", "Title", comment.MovieId);
+            return View(comment);
         }
 
-        // GET: Movies/Delete/5
+        // GET: Comments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -142,30 +129,31 @@ namespace Netflucks.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movie
-                .SingleOrDefaultAsync(m => m.MovieId == id);
-            if (movie == null)
+            var comment = await _context.Comment
+                .Include(c => c.Movie)
+                .SingleOrDefaultAsync(m => m.CommentId == id);
+            if (comment == null)
             {
                 return NotFound();
             }
 
-            return View(movie);
+            return View(comment);
         }
 
-        // POST: Movies/Delete/5
+        // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var movie = await _context.Movie.SingleOrDefaultAsync(m => m.MovieId == id);
-            _context.Movie.Remove(movie);
+            var comment = await _context.Comment.SingleOrDefaultAsync(m => m.CommentId == id);
+            _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MovieExists(int id)
+        private bool CommentExists(int id)
         {
-            return _context.Movie.Any(e => e.MovieId == id);
+            return _context.Comment.Any(e => e.CommentId == id);
         }
     }
 }
