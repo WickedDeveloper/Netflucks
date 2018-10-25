@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Netflucks.Data;
 using Netflucks.Models;
 using Netflucks.Services;
-using Netflucks.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Netflucks
 {
@@ -45,8 +43,6 @@ namespace Netflucks
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddMvc();
-
-            services.AddDbContext<netflucksContext>(options => options.UseSqlServer(Configuration.GetConnectionString("NetflucksConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
