@@ -14,7 +14,7 @@ namespace Netflucks.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return View(); // RedirectToAction("Index", "Movies");
+                return RedirectToAction("Index", "Movies");
             }
             else
             {
