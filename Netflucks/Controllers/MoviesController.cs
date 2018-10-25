@@ -21,7 +21,14 @@ namespace Netflucks.Controllers
         // GET: Movies
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Movie.ToListAsync());
+            if (User.Identity.IsAuthenticated)
+            {
+                return View(await _context.Movie.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         // GET: Movies/Details/5
