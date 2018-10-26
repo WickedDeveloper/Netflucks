@@ -25,11 +25,18 @@ namespace Netflucks.Controllers
         }
 
         // GET: Comments
-        //public async Task<IActionResult> GetComments()
+        //public IActionResult GetComments()
         //{
         //    CommentsController comments = new CommentsController(_context);
-        //    ViewBag.Comments = comments.Index();
+        //    if (comments.Create() != null)
+        //    {
+        //        return Vi
+        //    } else
+        //    {
+        //        return PartialView("No Comments");
+        //    }
         //}
+
         // GET: Movies
         public async Task<IActionResult> Index()
         {
@@ -46,6 +53,20 @@ namespace Netflucks.Controllers
         // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            //Movie mov = new Movie();
+            //Comment c = new Comment();
+            //CommentsController cm = new CommentsController(_context);
+            //ViewBag.Comments = await _context.Movie.SingleOrDefaultAsync(m =>)
+            //ViewBag.Comments = GetComments();
+            //var comments = 
+            //ViewData["Comment"] = new SelectList(_context.Comment, "MovieId", "MovieComment");
+            //IEnumerable<SelectListItem> items = _context.Comment.Select(c => new SelectListItem
+            //{
+            //    Value = c.MovieId.ToString(),
+            //    Text = c.MovieComment
+            //});
+            ViewData["Comments"] = _context.Comment.Where(c => c.MovieId == id).Select(c => c.MovieComment);
+
             if (id == null)
             {
                 return NotFound();
@@ -53,6 +74,7 @@ namespace Netflucks.Controllers
 
             var movie = await _context.Movie
                 .SingleOrDefaultAsync(m => m.MovieId == id);
+
             if (movie == null)
             {
                 return NotFound();

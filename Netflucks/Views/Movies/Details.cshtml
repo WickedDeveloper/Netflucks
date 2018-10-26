@@ -35,17 +35,20 @@
             @Html.DisplayFor(model => model.Rating)
         </dd>
     </dl>
+    <br />
+    <h4>Comments</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        @foreach (var x in ViewBag.Comments)
+        {
+            <dd>@x</dd>
+        }
+    </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.MovieId">Edit</a> |
     <a asp-action="Index">Back to List</a> <br />
     <a asp-action="CreateComment">Create Comment</a>
 </div>
-    @*@foreach (var item in ViewBag.Comments)
-    {
-        if (item.MovieId == Model.MovieId)
-        {
-            <option>@item.MovieComment</option>
-        }
-    }*@
+
 
