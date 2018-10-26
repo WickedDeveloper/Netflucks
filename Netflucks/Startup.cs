@@ -11,8 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Netflucks.Data;
 using Netflucks.Models;
 using Netflucks.Services;
-using Netflucks.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Netflucks
 {
