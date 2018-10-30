@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Amazon;
-using Amazon.S3;
-using Amazon.S3.Transfer;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -30,43 +23,6 @@ namespace Netflucks.Controllers
         public IActionResult CreateComment()
         {
             return RedirectToAction("Create", "Comments");
-        }
-
-        private const string bucketName = "movies4api2";
-        private int count = 1;
-        private string keyName = "Movie ";
-        private string filePath = "";
-        private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USEast1;
-        private static IAmazonS3 s3Client;
-
-        private async Task UploadFileAsync(IFormFile file)
-        {
-            try
-            {
-                keyName += count;
-                count++;
-                filePath = Path.GetTempFileName();
-                s3Client = new AmazonS3Client(bucketRegion);
-                var fileTransferUtility = new TransferUtility(s3Client);
-
-                //Option 1 - Upload a file, the file name is used as the object key name
-                await fileTransferUtility.UploadAsync(filePath, bucketName);
-                Console.WriteLine("Upload 1 completed");
-
-                //Option 2 - Specify object key name explicitly
-                await fileTransferUtility.UploadAsync(filePath, bucketName, keyName);
-                Console.WriteLine("Upload 2 completed");
-            }
-            catch (AmazonS3Exception e)
-            {
-                Console.WriteLine($"Error encountered on server. Message: '{e.Message}' when writing an object");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Unknown encountered on server. Message: '{e.Message}' when writing an object");
-            }
-
-            //return RedirectToAction("Details", "Movies");
         }
 
         // GET: Movies
@@ -114,13 +70,12 @@ namespace Netflucks.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MovieId,Title,ReleaseDate,Genre,Rating")] Movie movie, IFormFile file)
+        public async Task<IActionResult> Create([Bind("MovieId,Title,ReleaseDate,Genre,Rating")] Movie movie)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(movie);
                 await _context.SaveChangesAsync();
-                await UploadFileAsync(file);
                 return RedirectToAction(nameof(Index));
             }
             return View(movie);
